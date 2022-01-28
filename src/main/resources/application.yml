@@ -1,0 +1,34 @@
+spring:
+  thymeleaf:
+    cache: false
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 6212
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform:  org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate :
+        format_sql: true
+        show_sql: true
+        use_sql_comments: true
+
+logging:
+  level:
+    com:
+      securtity:
+        corespringsecurity5: debug
+    org:
+      springframework: debug
+      hibernate:
+        type:
+          descriptor:
+            sql: trace
