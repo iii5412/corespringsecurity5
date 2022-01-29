@@ -22,7 +22,7 @@ public class UserManagerController {
     @GetMapping("/admin/accounts")
     public String getUsers(Model model){
         model.addAttribute("accounts", userService.getUsers());
-        return "/admin/user/list";
+        return "admin/user/list";
     }
 
     @PostMapping("/admin/accounts")

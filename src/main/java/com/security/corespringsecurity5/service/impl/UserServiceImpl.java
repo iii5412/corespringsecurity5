@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
         final AccountDto accountDto = modelMapper.map(account, AccountDto.class);
         accountDto.setRoleNames(roleNames);
-        return null;
+        return accountDto;
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.security.corespringsecurity5.security.provider;
 
 import com.security.corespringsecurity5.security.common.FormWebAuthenticationDetails;
 import com.security.corespringsecurity5.security.service.AccountContext;
+import com.security.corespringsecurity5.security.token.AjaxAuthenticationToken;
 import com.security.corespringsecurity5.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
 
         //로그인시 Authentication Details에 담은 secret Key 검증
         final FormWebAuthenticationDetails details = (FormWebAuthenticationDetails)authentication.getDetails();
-        if(!SECRET_KEY_NAME.equals(details.getSecretKey())){
+        if(details == null || !SECRET_KEY_NAME.equals(details.getSecretKey())){
             //불충분 인증 예외
             throw new InsufficientAuthenticationException("Secret Key 불일치");
         }
@@ -59,6 +60,6 @@ public class AjaxAuthenticationProvider implements AuthenticationProvider {
     //Authentication 타입과 Provider에서 인증 객체 검색 시 지원 여부 체킹
     @Override
     public boolean supports(Class<?> authentication) {
-        return AjaxAuthenticationProvider.class.isAssignableFrom(authentication);
+        return AjaxAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }

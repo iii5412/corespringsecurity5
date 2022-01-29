@@ -21,7 +21,7 @@
             dataType: "json",
             beforeSend: (xhr) => {
                 xhr.setRequestHeader(csrfHeader, csrfToken);
-                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                xhr.setRequestHeader("X-Reqeusted-With", "XMLHttpRequest");
                 // xhr.setRequestHeader("Content-type", "application/json");
             },
             success: (data) => {
@@ -55,8 +55,8 @@
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" placeholder="비밀번호" required="required">
                 </div>
-<!--                <button type="submit" class="btn btn-lg btn-primary btn-block">로그인</button>-->
-                <button type="button" th:onclick="ajaxLogin()" th:id="ajaxbtn" class="btn btn-lg btn-primary btn-block">로그인</button>
+                <button type="submit" class="btn btn-lg btn-primary btn-block">로그인</button>
+<!--               <button type="button" th:onclick="ajaxLogin()" th:id="ajaxbtn" class="btn btn-lg btn-primary btn-block">로그인</button>-->
             </form>
         </div>
     </div>

@@ -31,8 +31,9 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        http.antMatcher("/api/**");
         http.authorizeRequests((authorizeRequest) -> {
-            authorizeRequest.antMatchers("/api/**");
+//            authorizeRequest.antMatchers("/api/**");
             authorizeRequest.antMatchers("/api/login").permitAll();
             authorizeRequest.antMatchers("/api/messages").hasRole("MANAGER");
             authorizeRequest.anyRequest().authenticated();
