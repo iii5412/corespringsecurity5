@@ -11,7 +11,9 @@ import java.util.Set;
 @Getter
 @ToString(exclude = {"roleSet"})
 @EqualsAndHashCode(of = "id")
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Resources {
     @Id
     @GeneratedValue

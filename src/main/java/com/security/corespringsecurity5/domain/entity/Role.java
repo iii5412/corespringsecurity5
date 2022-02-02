@@ -12,8 +12,10 @@ import java.util.Set;
 @Getter
 @ToString(exclude = {"users", "resourcesSet"})
 @NoArgsConstructor
+@AllArgsConstructor
 //@EqualsAndHashCode. = 모든 데이터를 비교말고 id만 같아도 같다고 하자. 아니면 연관관계를 모두 조회하여 비교하는 수가 있다..
 @EqualsAndHashCode(of = "id")
+@Builder
 public class Role {
     @Id
     @GeneratedValue
