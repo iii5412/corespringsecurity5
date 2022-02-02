@@ -9,6 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "account")
 @Getter
+@Setter
 @Builder
 @ToString(exclude = {"userRoles"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

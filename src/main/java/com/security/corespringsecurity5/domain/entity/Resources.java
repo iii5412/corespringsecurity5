@@ -9,6 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "resources")
 @Getter
+@Setter
 @ToString(exclude = {"roleSet"})
 @EqualsAndHashCode(of = "id")
 @Builder

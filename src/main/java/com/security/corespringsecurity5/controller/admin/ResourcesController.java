@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -43,7 +44,7 @@ public class ResourcesController {
         return "/admin/resource/detail";
     }
 
-    @PostMapping("/admin/resources/delete/{id}")
+    @GetMapping("/admin/resources/delete/{id}")
     public String removeResrouces(@PathVariable String id, Model model) {
         resourcesService.deleteResources(Long.parseLong(id));
         return "redirect:/admin/resources";
@@ -64,7 +65,7 @@ public class ResourcesController {
         return "redirect:/admin/resources";
     }
 
-    @GetMapping
+    @GetMapping(value = "/admin/resources/register")
     public String viewRoles(Model model) {
         model.addAttribute("roleList", roleService.getRoles());
 
