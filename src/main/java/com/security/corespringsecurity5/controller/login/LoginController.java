@@ -1,7 +1,6 @@
 package com.security.corespringsecurity5.controller.login;
 
 import com.security.corespringsecurity5.domain.dto.AccountDto;
-import com.security.corespringsecurity5.security.provider.AjaxAuthenticationProvider;
 import com.security.corespringsecurity5.security.token.AjaxAuthenticationToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
-import java.util.PrimitiveIterator;
 
 @Controller
 @Slf4j

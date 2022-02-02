@@ -10,6 +10,7 @@ import java.util.Set;
 @Entity
 @Table(name = "role")
 @Getter
+@Setter
 @ToString(exclude = {"users", "resourcesSet"})
 @NoArgsConstructor
 @AllArgsConstructor
