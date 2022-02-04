@@ -1,6 +1,8 @@
 package com.security.corespringsecurity5.domain.dto;
 
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
 import java.util.List;

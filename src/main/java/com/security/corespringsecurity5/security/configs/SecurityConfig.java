@@ -30,8 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService customUserDetailsService;
+//    @Autowired
+//    private UserDetailsService customUserDetailsService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -52,14 +52,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             로그인 실패시 /login?error=ture 로 접근하는데, Security는 이것도 보두 다른 URL로 보기때문에
             /login* 으로 처리.
             */
-            authorizeRequest.antMatchers("/", "/users", "/user/login/**", "/login*").permitAll();
+//            authorizeRequest.antMatchers("/", "/users", "/user/login/**", "/login*").permitAll();
 
             // /myPage는 USER 권한만 접근 가능
             authorizeRequest.antMatchers("/mypage").hasRole("USER");
             // /messages는 MANAGER만 접근 가능
             authorizeRequest.antMatchers("/messages").hasRole("MANAGER");
             // /config는 ADMIN만 접근 가능
-            authorizeRequest.antMatchers("/config").hasRole("ADMIN");
+            authorizeRequest.antMatchers("/config", "/admin/**").hasRole("ADMIN");
+            // 위 지정된 url 외에 모두 허용
+            authorizeRequest.antMatchers("/**").permitAll();
 
             //그 외 모든 요청은 인증된 사용자만 접근 가능.
             authorizeRequest.anyRequest().authenticated();
