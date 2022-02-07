@@ -16,8 +16,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@EnableWebSecurity
-@Order(0)
+//@EnableWebSecurity
+//@Order(0)
 @RequiredArgsConstructor
 public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
 

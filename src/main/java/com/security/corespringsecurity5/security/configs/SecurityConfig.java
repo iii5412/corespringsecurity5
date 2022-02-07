@@ -3,13 +3,20 @@ package com.security.corespringsecurity5.security.configs;
 import com.security.corespringsecurity5.security.handler.CustomAuthenticationFailureHandler;
 import com.security.corespringsecurity5.security.handler.CustomAuthenticationSuccessHandler;
 import com.security.corespringsecurity5.security.common.FormAuthenticationDetailsSource;
+import com.security.corespringsecurity5.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.security.corespringsecurity5.security.provider.CustomAuthenticationProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.SecurityMetadataSource;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,11 +26,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 
 @EnableWebSecurity
 @Order(1)
@@ -93,6 +104,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 response.sendRedirect(deniedUrl);
             });
         });
+        //기존 FilterSecurityInterceptor Filter의 앞에 CustomFilterSecurityInterceptor를 먼저 수행하도록 add
+        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class);
     }
 
     @Bean
@@ -119,4 +132,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
+    //FilterSecurityInterceptor 타입 Filter Bean등록
+    @Bean
+    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
+        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
+        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
+//        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
+
+        return filterSecurityInterceptor;
+    }
+
+    //AuthenticationManager Bean등록
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    //직접만든 URL방식의 FilterInvocationSecurityMetadataSource 구현체
+    private FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource(){
+        return new UrlFilterInvocationSecurityMetadataSource();
+    }
+
+    private AccessDecisionManager affirmativeBased(){
+        //AcceessDecisionManager는 생성시 Voter들이 필수로 필요하다.
+        AffirmativeBased affirmativeBased = new AffirmativeBased(getAccessDecisionVoters());
+        return affirmativeBased;
+    }
+
+    //Voters
+    //AccessDecisionManager가 인가처리시 참고할 Voter List 반환
+    private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
+        return Arrays.asList(new RoleVoter());
+    }
+
+
 }
