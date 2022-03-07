@@ -11,8 +11,5 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 @Configuration
 class AppConfig {
-    @Bean
-    public ModelMapper modelMapper(){
-        return new ModelMapper();
-    }
+
 }
