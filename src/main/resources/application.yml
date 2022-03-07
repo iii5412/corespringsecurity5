@@ -10,7 +10,6 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: 6212
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,3 +32,9 @@ logging:
         type:
           descriptor:
             sql: trace
+server:
+  servlet:
+    encoding:
+      force: true
+      enabled: true
+      charset: EUC-KR
