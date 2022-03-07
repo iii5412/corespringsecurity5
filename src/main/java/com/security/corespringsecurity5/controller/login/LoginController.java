@@ -50,6 +50,9 @@ public class LoginController {
             Model model){
 
         AccountDto accountDto = null;
+        if(principal == null){
+            return "redirect:/login";
+        }
         if(principal instanceof UsernamePasswordAuthenticationToken) {
             accountDto = modelMapper.map(((UsernamePasswordAuthenticationToken) principal).getPrincipal(), AccountDto.class);
         }else if(principal instanceof AjaxAuthenticationToken) {
