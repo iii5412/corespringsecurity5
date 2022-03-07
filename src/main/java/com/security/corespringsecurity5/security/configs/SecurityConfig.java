@@ -1,13 +1,17 @@
 package com.security.corespringsecurity5.security.configs;
 
+import com.security.corespringsecurity5.security.factory.UrlResourcesMapFactoryBean;
 import com.security.corespringsecurity5.security.handler.CustomAuthenticationFailureHandler;
 import com.security.corespringsecurity5.security.handler.CustomAuthenticationSuccessHandler;
 import com.security.corespringsecurity5.security.common.FormAuthenticationDetailsSource;
 import com.security.corespringsecurity5.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.security.corespringsecurity5.security.provider.CustomAuthenticationProvider;
+import com.security.corespringsecurity5.security.service.SecurityResourceService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
@@ -41,8 +45,8 @@ import java.util.List;
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-//    @Autowired
-//    private UserDetailsService customUserDetailsService;
+    @Autowired
+    private SecurityResourceService securityResourceService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -65,12 +69,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             */
 //            authorizeRequest.antMatchers("/", "/users", "/user/login/**", "/login*").permitAll();
 
-            // /myPage는 USER 권한만 접근 가능
-            authorizeRequest.antMatchers("/mypage").hasRole("USER");
-            // /messages는 MANAGER만 접근 가능
-            authorizeRequest.antMatchers("/messages").hasRole("MANAGER");
-            // /config는 ADMIN만 접근 가능
-            authorizeRequest.antMatchers("/config", "/admin/**").hasRole("ADMIN");
+//            // /myPage는 USER 권한만 접근 가능
+//            authorizeRequest.antMatchers("/mypage").hasRole("USER");
+//            // /messages는 MANAGER만 접근 가능
+//            authorizeRequest.antMatchers("/messages").hasRole("MANAGER");
+//            // /config는 ADMIN만 접근 가능
+//            authorizeRequest.antMatchers("/config", "/admin/**").hasRole("ADMIN");
             // 위 지정된 url 외에 모두 허용
             authorizeRequest.antMatchers("/**").permitAll();
 
@@ -105,6 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             });
         });
         //기존 FilterSecurityInterceptor Filter의 앞에 CustomFilterSecurityInterceptor를 먼저 수행하도록 add
+//        http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class);
         http.addFilterBefore(customFilterSecurityInterceptor(), FilterSecurityInterceptor.class);
     }
 
@@ -139,9 +144,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
         filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
         filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
-//        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
+        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
 
         return filterSecurityInterceptor;
+    }
+
+    /**
+     * 서블릿 컨테이너에서 사용되지 않도록 Filter Enabled false처리
+     * @return
+     * @throws Exception
+     */
+    @Bean
+    public FilterRegistrationBean<FilterSecurityInterceptor> filterRegistrationBean() throws Exception {
+        FilterRegistrationBean<FilterSecurityInterceptor> filterRegistrationBean = new FilterRegistrationBean<>();
+        filterRegistrationBean.setFilter(customFilterSecurityInterceptor());
+        filterRegistrationBean.setEnabled(false);
+        return filterRegistrationBean;
     }
 
     //AuthenticationManager Bean등록
@@ -150,15 +168,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
-    //직접만든 URL방식의 FilterInvocationSecurityMetadataSource 구현체
-    private FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource(){
-        return new UrlFilterInvocationSecurityMetadataSource();
-    }
-
     private AccessDecisionManager affirmativeBased(){
         //AcceessDecisionManager는 생성시 Voter들이 필수로 필요하다.
-        AffirmativeBased affirmativeBased = new AffirmativeBased(getAccessDecisionVoters());
-        return affirmativeBased;
+        return new AffirmativeBased(getAccessDecisionVoters());
     }
 
     //Voters
@@ -167,5 +179,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return Arrays.asList(new RoleVoter());
     }
 
+    //직접만든 URL방식의 FilterInvocationSecurityMetadataSource 구현체
+    private FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFacotoryBean().getObject());
+    }
+
+    public UrlResourcesMapFactoryBean urlResourcesMapFacotoryBean(){
+        return new UrlResourcesMapFactoryBean(securityResourceService);
+    }
 
 }
