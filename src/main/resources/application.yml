@@ -37,4 +37,5 @@ server:
     encoding:
       force: true
       enabled: true
-      charset: EUC-KR
+      charset: UTF-8
+

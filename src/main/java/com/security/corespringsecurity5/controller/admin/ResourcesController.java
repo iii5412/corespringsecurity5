@@ -4,6 +4,7 @@ import com.security.corespringsecurity5.domain.dto.ResourcesDto;
 import com.security.corespringsecurity5.domain.entity.Resources;
 import com.security.corespringsecurity5.domain.entity.Role;
 import com.security.corespringsecurity5.repository.RoleRepository;
+import com.security.corespringsecurity5.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.security.corespringsecurity5.service.ResourcesService;
 import com.security.corespringsecurity5.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class ResourcesController {
 
     private final ModelMapper modelMapper;
 
+    private final UrlFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
+
     @GetMapping("/admin/resources")
     public String getResources(Model model) throws Exception {
         model.addAttribute("resources", resourcesService.getResources());
@@ -47,6 +50,7 @@ public class ResourcesController {
     @GetMapping("/admin/resources/delete/{id}")
     public String removeResrouces(@PathVariable String id, Model model) {
         resourcesService.deleteResources(Long.parseLong(id));
+        filterInvocationSecurityMetadataSource.reload();
         return "redirect:/admin/resources";
     }
 
@@ -61,6 +65,7 @@ public class ResourcesController {
         final Resources resources = modelMapper.map(resourcesDto, Resources.class);
 
         resourcesService.createResources(resources);
+        filterInvocationSecurityMetadataSource.reload();
 
         return "redirect:/admin/resources";
     }

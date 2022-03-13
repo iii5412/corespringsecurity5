@@ -48,6 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private SecurityResourceService securityResourceService;
 
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(customAuthenticationProvider());
@@ -180,8 +181,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     //직접만든 URL방식의 FilterInvocationSecurityMetadataSource 구현체
-    private FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
-        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFacotoryBean().getObject());
+    @Bean
+    public FilterInvocationSecurityMetadataSource urlFilterInvocationSecurityMetadataSource() throws Exception {
+        return new UrlFilterInvocationSecurityMetadataSource(urlResourcesMapFacotoryBean().getObject(), securityResourceService);
     }
 
     public UrlResourcesMapFactoryBean urlResourcesMapFacotoryBean(){
