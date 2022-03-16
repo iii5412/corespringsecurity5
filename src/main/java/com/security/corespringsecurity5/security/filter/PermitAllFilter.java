@@ -26,16 +26,29 @@ public class PermitAllFilter extends FilterSecurityInterceptor {
 
     @Override
     protected InterceptorStatusToken beforeInvocation(Object object) {
+        final HttpServletRequest request = ((FilterInvocation) object).getRequest();
+        boolean permitAll = permitAllRequestMatchers.stream().anyMatch(reqeustMatcher -> reqeustMatcher.matches(request));
 
-        boolean permitAll = false;
-        final FilterInvocation fi = (FilterInvocation) object;
-        final HttpServletRequest request = fi.getRequest();
-        permitAll = permitAllRequestMatchers.stream().anyMatch(reqeustMatcher -> reqeustMatcher.matches(request));
         if (permitAll) {
             return null;
-        } else {
-            return super.beforeInvocation(fi);
         }
+
+        return super.beforeInvocation(object);
+
+//        boolean permitAll = false;
+//        final HttpServletRequest request = ((FilterInvocation) object).getRequest();
+//        for(RequestMatcher requestMatcher : permitAllRequestMatchers){
+//            if(requestMatcher.matches(request)){
+//                permitAll = true;
+//                break;
+//            }
+//        }
+//
+//        if(permitAll){
+//            return null;
+//        }
+//
+//        return super.beforeInvocation(object);
     }
 
     public void invoke(FilterInvocation filterInvocation) throws IOException, ServletException {
