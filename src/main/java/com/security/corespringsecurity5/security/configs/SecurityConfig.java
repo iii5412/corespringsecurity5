@@ -8,6 +8,7 @@ import com.security.corespringsecurity5.security.common.FormAuthenticationDetail
 import com.security.corespringsecurity5.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.security.corespringsecurity5.security.provider.CustomAuthenticationProvider;
 import com.security.corespringsecurity5.security.service.SecurityResourceService;
+import com.security.corespringsecurity5.security.voter.IpAddressAccessVoter;
 import com.security.corespringsecurity5.service.RoleHierarchyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
@@ -200,6 +201,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private List<AccessDecisionVoter<?>> getAccessDecisionVoters() {
 
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
+        //IpAddressVoter가 제일 먼저 수행되어야 한다.
+        accessDecisionVoters.add(new IpAddressAccessVoter(securityResourceService));
         accessDecisionVoters.add(roleVoter());
         return accessDecisionVoters;
 //        return Arrays.asList(new RoleVoter());

@@ -1,14 +1,7 @@
 package com.security.corespringsecurity5.security.listener;
 
-import com.security.corespringsecurity5.controller.admin.ResourcesController;
-import com.security.corespringsecurity5.domain.entity.Account;
-import com.security.corespringsecurity5.domain.entity.Resources;
-import com.security.corespringsecurity5.domain.entity.Role;
-import com.security.corespringsecurity5.domain.entity.RoleHierarchy;
-import com.security.corespringsecurity5.repository.ResourcesRepository;
-import com.security.corespringsecurity5.repository.RoleHierarchyRepository;
-import com.security.corespringsecurity5.repository.RoleRepository;
-import com.security.corespringsecurity5.repository.UserRepository;
+import com.security.corespringsecurity5.domain.entity.*;
+import com.security.corespringsecurity5.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -33,6 +26,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private final ResourcesRepository resourcesRepository;
 
     private final RoleHierarchyRepository roleHierarchyRepository;
+
+    private final AccessIpRepository accessIpRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -67,6 +62,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         createResourceIfNotFound("/user/**", "", roles3, "url");
         createUserIfNotFound("user", "1234", "user@gamil.com", 20, roles3);
         createRoleHierarchyIfNotFound(userRole, managerRole);
+
+        setupAccessIpData();
 
     }
 
@@ -138,5 +135,16 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         final RoleHierarchy saveRoleHierarchy = roleHierarchyRepository.save(roleHierarchy);
         saveRoleHierarchy.setParentRole(parentRoleHierarchy);
+    }
+
+    @Transactional
+    public void setupAccessIpData() {
+        final AccessIp byIpAddress = accessIpRepository.findByIpAddress("0:0:0:0:0:0:0:1");
+        if(byIpAddress == null){
+            final AccessIp accessIp = AccessIp.builder()
+                    .ipAddress("0:0:0:0:0:0:0:1")
+                    .build();
+            accessIpRepository.save(accessIp);
+        }
     }
 }
