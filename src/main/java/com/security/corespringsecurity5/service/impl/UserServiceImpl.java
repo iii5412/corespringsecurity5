@@ -9,6 +9,7 @@ import com.security.corespringsecurity5.repository.UserRepository;
 import com.security.corespringsecurity5.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +84,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    @Secured("ROLE_MANAGER")
+    public void order() {
+        System.out.println("UserServiceImpl.order");
     }
 
 

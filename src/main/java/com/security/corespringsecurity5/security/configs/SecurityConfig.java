@@ -1,17 +1,15 @@
 package com.security.corespringsecurity5.security.configs;
 
+import com.security.corespringsecurity5.security.common.FormAuthenticationDetailsSource;
 import com.security.corespringsecurity5.security.factory.UrlResourcesMapFactoryBean;
 import com.security.corespringsecurity5.security.filter.PermitAllFilter;
 import com.security.corespringsecurity5.security.handler.CustomAuthenticationFailureHandler;
 import com.security.corespringsecurity5.security.handler.CustomAuthenticationSuccessHandler;
-import com.security.corespringsecurity5.security.common.FormAuthenticationDetailsSource;
 import com.security.corespringsecurity5.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import com.security.corespringsecurity5.security.provider.CustomAuthenticationProvider;
 import com.security.corespringsecurity5.security.service.SecurityResourceService;
 import com.security.corespringsecurity5.security.voter.IpAddressAccessVoter;
-import com.security.corespringsecurity5.service.RoleHierarchyService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -19,22 +17,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.SecurityMetadataSource;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleHierarchyVoter;
-import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
@@ -45,12 +38,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @EnableWebSecurity
 @Order(1)
-@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @Slf4j
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -210,7 +201,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        return Arrays.asList(new RoleVoter());
     }
 
-//    @Bean
+    //    @Bean
 //    public AccessDecisionVoter<? extends Object> roleVoter() {
     private AccessDecisionVoter<? extends Object> roleVoter() {
         // 계층형 권한 Voter 반환(계층 권한 인터페이스인 RoleHierarchy 타입필요)
