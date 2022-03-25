@@ -1,6 +1,7 @@
 package com.security.corespringsecurity5.aopsecurity;
 
 import com.security.corespringsecurity5.domain.dto.AccountDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -11,7 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.security.Principal;
 
 @Controller
+@RequiredArgsConstructor
 public class AopSecurityController {
+
+    private final AopMethodService aopMethodService;
 
     @GetMapping("/preAuthorize")
     @PreAuthorize("hasRole('ROLE_USER') and #accountDto.username == principal.username")
@@ -19,6 +23,13 @@ public class AopSecurityController {
 
         model.addAttribute("method", "Success @PreAuthorize");
 
+        return "/aop/method";
+    }
+
+    @GetMapping("/methodSecured")
+    public String methodSecured(Model model) {
+        aopMethodService.methodSecured();
+        model.addAttribute("method", "method Secured");
         return "/aop/method";
     }
 

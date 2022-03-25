@@ -51,10 +51,25 @@ public class SecurityResourceService {
         return result;
     }
 
+    public LinkedHashMap<String, List<ConfigAttribute>> getMethodResourceList() {
+
+        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+        final List<Resources> resourcesList = resourcesRepository.findAllMethodResources();
+        resourcesList.forEach(resource -> {
+            List<ConfigAttribute> configAttributeList = new ArrayList<>();
+            resource.getRoleSet().forEach(role -> {
+                configAttributeList.add(new SecurityConfig(role.getRoleName()));
+            });
+            result.put(resource.getResourceName(), configAttributeList);
+        });
+        return result;
+    }
+
     public List<String> getAccessIpList() {
 //        return accessIpRepository.findAll().stream()
 //                .map(accessIp -> accessIp.getIpAddress()).collect(Collectors.toList());
         return accessIpRepository.findAll().stream()
                 .map(AccessIp::getIpAddress).collect(Collectors.toList());
     }
+
 }

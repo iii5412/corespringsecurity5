@@ -51,6 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //인증, 인가가 필요 없는 자원 Url
     private String[] permitAllResources = {"/", "/login", "/user/login/**"};
 
+    @Autowired
+    private AccessDecisionVoter<? extends Object> roleVoter;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(customAuthenticationProvider());
@@ -196,24 +199,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = new ArrayList<>();
         //IpAddressVoter가 제일 먼저 수행되어야 한다.
         accessDecisionVoters.add(new IpAddressAccessVoter(securityResourceService));
-        accessDecisionVoters.add(roleVoter());
+//        accessDecisionVoters.add(roleVoter());
+        accessDecisionVoters.add(roleVoter);
         return accessDecisionVoters;
 //        return Arrays.asList(new RoleVoter());
     }
 
-    //    @Bean
+//    @Bean
 //    public AccessDecisionVoter<? extends Object> roleVoter() {
-    private AccessDecisionVoter<? extends Object> roleVoter() {
-        // 계층형 권한 Voter 반환(계층 권한 인터페이스인 RoleHierarchy 타입필요)
-        return new RoleHierarchyVoter(roleHierarchy());
-//        return new RoleVoter();
-    }
-
-    @Bean
-    public RoleHierarchyImpl roleHierarchy() {
-        final RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        return roleHierarchy;
-    }
+//        // 계층형 권한 Voter 반환(계층 권한 인터페이스인 RoleHierarchy 타입필요)
+//        return new RoleHierarchyVoter(roleHierarchy());
+////        return new RoleVoter();
+//    }
+//
+//    @Bean
+//    public RoleHierarchyImpl roleHierarchy() {
+//        final RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+//        return roleHierarchy;
+//    }
 
     //직접만든 URL방식의 FilterInvocationSecurityMetadataSource 구현체
     @Bean
