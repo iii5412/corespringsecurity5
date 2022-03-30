@@ -3,8 +3,6 @@ package com.security.corespringsecurity5.aopsecurity;
 import com.security.corespringsecurity5.domain.dto.AccountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +14,9 @@ import java.security.Principal;
 public class AopSecurityController {
 
     private final AopMethodService aopMethodService;
+
+    private final AopPointcutService aopPointcutService;
+    private final AopLiveMethodService aopLiveMethodService;
 
     @GetMapping("/preAuthorize")
     @PreAuthorize("hasRole('ROLE_USER') and #accountDto.username == principal.username")
@@ -31,6 +32,23 @@ public class AopSecurityController {
         aopMethodService.methodSecured();
         model.addAttribute("method", "method Secured");
         return "/aop/method";
+    }
+
+    @GetMapping("/pointcutSecured")
+    public String pointcutSecured(Model model){
+        aopPointcutService.notSecured();
+        aopPointcutService.pointcutSecured();
+        model.addAttribute("method", "Success PointcutSecured");
+
+        return "/aop/method";
+    }
+
+    @GetMapping("/liveMethodSecured")
+    public String liveMethodSecured(Model model){
+        aopLiveMethodService.liveMethodSecured();
+        model.addAttribute("method", "Success LiveMethodSecured");
+
+        return "aop/method";
     }
 
 }

@@ -1,15 +1,16 @@
 package com.security.corespringsecurity5.security.configs;
 
 import com.security.corespringsecurity5.security.factory.MethodResourcesFactoryBean;
+import com.security.corespringsecurity5.security.interceptor.CustomMethodSecurityInterceptor;
 import com.security.corespringsecurity5.security.service.SecurityResourceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
+import org.springframework.security.access.intercept.RunAsManager;
 import org.springframework.security.access.method.MapBasedMethodSecurityMetadataSource;
 import org.springframework.security.access.method.MethodSecurityMetadataSource;
 import org.springframework.security.access.vote.AffirmativeBased;
@@ -43,8 +44,29 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
     }
 
     @Bean
+    public BeanPostProcessor protectPointcutPostProcessor() {
+//        Class<?> clazz = Class.forName("org.springframework.security.config.method.ProtectPointcutPostProcessor");
+//        final Constructor<?> declaredConstructor = clazz.getDeclaredConstructor(MapBasedMethodSecurityMetadataSource.class);
+//        declaredConstructor.setAccessible(true);
+//        final Object instance = declaredConstructor.newInstance(mapBasedMethodSecurityMetadataSource());
+//        final Method setPointcutMap = instance.getClass().getMethod("setPointcutMap", Map.class);
+//        setPointcutMap.setAccessible(true);
+//        setPointcutMap.invoke(instance, pointcutResourcesFactoryBean().getObject());
+//
+//        return (BeanPostProcessor) instance;
+        ProtectPointcutPostProcessor protectPointcutPostProcessor = new ProtectPointcutPostProcessor(mapBasedMethodSecurityMetadataSource());
+        protectPointcutPostProcessor.setPointcutMap(pointcutResourcesFactoryBean().getObject());
+        return protectPointcutPostProcessor;
+    }
+
+    @Bean
     public MethodResourcesFactoryBean methodResourcesFactoryBean() {
-        return new MethodResourcesFactoryBean(securityResourceService);
+        return new MethodResourcesFactoryBean(securityResourceService, MethodResourcesFactoryBean.METHOD);
+    }
+
+    @Bean
+    public MethodResourcesFactoryBean pointcutResourcesFactoryBean() {
+        return new MethodResourcesFactoryBean(securityResourceService, MethodResourcesFactoryBean.POINT_CUT);
     }
 
     @Bean
@@ -56,8 +78,7 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
     @Bean
     public RoleHierarchyImpl roleHierarchy() {
-        final RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        return roleHierarchy;
+        return new RoleHierarchyImpl();
     }
 
     @Override
@@ -73,4 +94,18 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
         return new AffirmativeBased(decisionVoters);
     }
 
+
+    @Bean
+    public CustomMethodSecurityInterceptor customMethodSecurityInterceptor(MapBasedMethodSecurityMetadataSource mapBasedMethodSecurityMetadataSource){
+        final CustomMethodSecurityInterceptor interceptor = new CustomMethodSecurityInterceptor();
+        interceptor.setAccessDecisionManager(accessDecisionManager());
+        interceptor.setAfterInvocationManager(afterInvocationManager());
+        interceptor.setSecurityMetadataSource(mapBasedMethodSecurityMetadataSource);
+        final RunAsManager runAsManager = runAsManager();
+        if(runAsManager != null){
+            interceptor.setRunAsManager(runAsManager);
+        }
+
+        return interceptor;
+    }
 }

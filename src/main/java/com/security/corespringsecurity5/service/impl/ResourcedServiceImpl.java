@@ -36,6 +36,7 @@ public class ResourcedServiceImpl implements ResourcesService {
     }
 
     @Override
+    @Transactional
     public void deleteResources(Long id) {
         resourcesRepository.deleteById(id);
     }

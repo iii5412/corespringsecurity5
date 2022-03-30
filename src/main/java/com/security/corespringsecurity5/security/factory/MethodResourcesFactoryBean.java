@@ -11,14 +11,29 @@ import java.util.List;
 public class MethodResourcesFactoryBean implements FactoryBean<LinkedHashMap<String, List<ConfigAttribute>>> {
 
     private final SecurityResourceService securityResourceService;
+    private String resourceType;
     private LinkedHashMap<String, List<ConfigAttribute>> methodMap;
 
-    public MethodResourcesFactoryBean(SecurityResourceService securityResourceService) {
+    public static final String METHOD = "method";
+    public static final String POINT_CUT = "pointcut";
+
+    public MethodResourcesFactoryBean(SecurityResourceService securityResourceService, String resourceType) {
         this.securityResourceService = securityResourceService;
+        this.resourceType = resourceType;
     }
 
     private void init() {
-        methodMap = securityResourceService.getMethodResourceList();
+//        if(METHOD.equals(resourceType)) {
+//            methodMap = securityResourceService.getMethodResourceList();
+//        }
+        switch (resourceType){
+            case METHOD:
+                methodMap = securityResourceService.getMethodResourceList();
+                break;
+            case POINT_CUT:
+                methodMap = securityResourceService.getPointcutResourceList();
+                break;
+        }
     }
 
     @Override

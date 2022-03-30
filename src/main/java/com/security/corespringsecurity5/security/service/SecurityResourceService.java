@@ -18,7 +18,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 데이터 계층으로부터 자원 정보, 권한정보를 가져와 Map객체로 매핑한다.
@@ -39,31 +42,58 @@ public class SecurityResourceService {
 
     public LinkedHashMap<RequestMatcher, List<ConfigAttribute>> getResourceList() {
 
-        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> result = new LinkedHashMap<>();
-        final List<Resources> resourcesList = resourcesRepository.findAllResources();
-        resourcesList.forEach(resource -> {
-            List<ConfigAttribute> configAttributeList = new ArrayList<>();
-            resource.getRoleSet().forEach(role -> {
-                configAttributeList.add(new SecurityConfig(role.getRoleName()));
-            });
-            result.put(new AntPathRequestMatcher(resource.getResourceName()), configAttributeList);
-        });
-        return result;
+//        LinkedHashMap<RequestMatcher, List<ConfigAttribute>> result = new LinkedHashMap<>();
+//        final List<Resources> resourcesList = resourcesRepository.findAllResources("url");
+//        resourcesList.forEach(resource -> {
+//            List<ConfigAttribute> configAttributeList = new ArrayList<>();
+//            resource.getRoleSet().forEach(role -> {
+//                configAttributeList.add(new SecurityConfig(role.getRoleName()));
+//            });
+//            result.put(new AntPathRequestMatcher(resource.getResourceName()), configAttributeList);
+//        });
+//        return result;
+        return findAllResourceWithFunc("url", AntPathRequestMatcher::new);
     }
 
     public LinkedHashMap<String, List<ConfigAttribute>> getMethodResourceList() {
 
-        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
-        final List<Resources> resourcesList = resourcesRepository.findAllMethodResources();
+//        LinkedHashMap<String, List<ConfigAttribute>> result = new LinkedHashMap<>();
+////        final List<Resources> resourcesList = resourcesRepository.findAllMethodResources();
+//        final List<Resources> resourcesList = resourcesRepository.findAllResources("method");
+//        resourcesList.forEach(resource -> {
+//            List<ConfigAttribute> configAttributeList = new ArrayList<>();
+//            resource.getRoleSet().forEach(role -> {
+//                configAttributeList.add(new SecurityConfig(role.getRoleName()));
+//            });
+//            result.put(resource.getResourceName(), configAttributeList);
+//        });
+//        return result;
+
+//        return findAllResourceWithFunc("method", (resourceName) -> resourceName);
+        return findAllResourceWithFunc("method", (resourceName) -> resourceName);
+    }
+
+    public LinkedHashMap<String, List<ConfigAttribute>> getPointcutResourceList() {
+        return findAllResourceWithFunc("pointcut", (resourceName) -> resourceName);
+    }
+
+
+    public <T> LinkedHashMap<T, List<ConfigAttribute>> findAllResourceWithFunc(String resourceType, Function<String, T> func) {
+
+        LinkedHashMap<T, List<ConfigAttribute>> result = new LinkedHashMap<>();
+//        final List<Resources> resourcesList = resourcesRepository.findAllMethodResources();
+        final List<Resources> resourcesList = resourcesRepository.findAllResources(resourceType);
         resourcesList.forEach(resource -> {
             List<ConfigAttribute> configAttributeList = new ArrayList<>();
             resource.getRoleSet().forEach(role -> {
                 configAttributeList.add(new SecurityConfig(role.getRoleName()));
             });
-            result.put(resource.getResourceName(), configAttributeList);
+
+            result.put(func.apply(resource.getResourceName()), configAttributeList);
         });
         return result;
     }
+
 
     public List<String> getAccessIpList() {
 //        return accessIpRepository.findAll().stream()
